@@ -99,7 +99,7 @@ impl AgentManager {
 
         let incoming = Arc::clone(&self.observer);
         let rx2 = async_std::task::spawn(async move {
-            let mut rx = incoming.lock().unwrap();
+            let rx = incoming.lock().unwrap();
             while let message = rx.recv().unwrap() {
                 for (agent_domain_name, agent) in agents.clone().iter() {
                     if let Some(receiver) = &message.receiver {
@@ -110,17 +110,13 @@ impl AgentManager {
                                 std::process::exit(0);
                             }
                         }
-
                         if agent_domain_name != receiver {
                             continue;
                         }
                     }
-                    // else if agent_domain_name == &message.sender {
-                    //     continue;
-                    // }
                     let message = message.clone();
                     let agent = Arc::clone(agent);
-                    let rx = async_std::task::spawn(async move {
+                    async_std::task::spawn(async move {
                         Python::with_gil(|py| {
                             let asyncio = py.import("asyncio").unwrap();
                             let event_loop = asyncio.call_method0("new_event_loop").unwrap();
