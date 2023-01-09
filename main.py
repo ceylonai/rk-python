@@ -19,7 +19,7 @@ class MyAgent:
                     "start_time": self.start_time,
                 }
             }
-            await self.core.message(msg)
+            await self.core.send(msg)
             # await asyncio.sleep(2)
 
     async def receiver(self, sender, message):
@@ -29,6 +29,7 @@ class MyAgent:
             print(f"Rate {sender} {self.code}: {rate:f} msg/s")
             self.start_time = time.time_ns()
             self.counter = 0
+            await self.core.exit()
         self.counter += 1
 
 

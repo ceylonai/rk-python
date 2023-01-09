@@ -8,6 +8,7 @@ use std::sync::mpsc::{
 };
 use pyo3::{Py, PyAny, pyclass};
 use pyo3::exceptions::PyOSError;
+use pyo3::types::PyString;
 use crate::core::core::AgentCore;
 use crate::core::data::Message;
 
@@ -102,6 +103,14 @@ impl AgentManager {
             while let message = rx.recv().unwrap() {
                 for (agent_domain_name, agent) in agents.clone().iter() {
                     if let Some(receiver) = &message.receiver {
+                        if receiver == &"system".to_string() {
+                            let data = message.data.clone();
+                            if data.to_string() == "shutdown".to_string() {
+                                println!("Shutting down");
+                                std::process::exit(0);
+                            }
+                        }
+
                         if agent_domain_name != receiver {
                             continue;
                         }

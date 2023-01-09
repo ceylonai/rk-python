@@ -15,7 +15,7 @@ impl AgentCore {
     /**
      * Send a message to the agent
      */
-    pub fn message<'p>(&self, py: Python<'p>, message: Py<PyAny>) -> PyResult<&'p PyAny> {
+    pub fn send<'p>(&self, py: Python<'p>, message: Py<PyAny>) -> PyResult<&'p PyAny> {
         let receiver = message
             .as_ref(py)
             .get_item("receiver")
@@ -54,5 +54,11 @@ impl AgentCore {
             rx.await;
             Ok(Python::with_gil(|py| "ok".to_object(py)))
         })
+    }
+    pub fn exit<'a>(&'a self, py: Python<'a>) -> PyResult<&'a PyAny> {
+        let msg = PyDict::new(py);
+        msg.set_item("receiver", "system")?;
+        msg.set_item("data", "shutdown")?;
+        self.send(py, msg.to_object(py))
     }
 }
