@@ -6,7 +6,7 @@ import rakun_python
 
 @rakun_python.Agent
 class MyAgent:
-    counter = 0
+    counter = 1
     start_time = time.time_ns()
 
     async def run(self):
@@ -20,10 +20,13 @@ class MyAgent:
                 }
             }
             await self.core.send(msg)
+            self.core.metric("count", self.counter)
             # await asyncio.sleep(2)
 
     async def receiver(self, sender, message):
-        if self.counter % 10 == 0:
+        metrics = self.core.get_metrics()
+        print(metrics)
+        if self.counter % 20 == 0:
             diff = (time.time_ns() - self.start_time) / 1e9
             rate = self.counter / diff
             print(f"Rate {sender} {self.code}: {rate:f} msg/s")
@@ -36,7 +39,7 @@ class MyAgent:
 async def main():
     # agent = MyAgent()
     agent_manager = rakun_python.AgentManager()
-    for i in range(10):
+    for i in range(2):
         agent_manager.register(MyAgent, f"myagent-{i}")
     await agent_manager.start()
     # await agent.core.start()
