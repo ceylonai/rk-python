@@ -65,7 +65,6 @@ impl AgentManager {
             let code = agent_ref.getattr(py, "code").unwrap();
             let code = code.to_string();
             let core = AgentCore {
-                metrics: Cell::new(HashMap::new()),
                 agent_id: Arc::new(code.to_string()),
                 domain_name: Arc::new(domain_name.to_string()),
                 publisher: publisher.clone(),

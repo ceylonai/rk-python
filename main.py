@@ -4,6 +4,7 @@ import time
 import rakun_python
 
 
+@rakun_python.AgentMetric
 @rakun_python.Agent
 class MyAgent:
     counter = 1
@@ -20,11 +21,11 @@ class MyAgent:
                 }
             }
             await self.core.send(msg)
-            self.core.metric("count", self.counter)
+            self.metric.save("count", self.counter)
             # await asyncio.sleep(2)
 
     async def receiver(self, sender, message):
-        metrics = self.core.get_metrics()
+        metrics = self.metric.all()
         print(metrics)
         if self.counter % 20 == 0:
             diff = (time.time_ns() - self.start_time) / 1e9

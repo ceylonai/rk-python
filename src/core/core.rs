@@ -9,7 +9,6 @@ use crate::core::data::Message;
 
 #[pyclass]
 pub struct AgentCore {
-    pub metrics: Cell<HashMap<String, Vec<f64>>>,
     pub agent_id: Arc<String>,
     pub domain_name: Arc<String>,
     pub publisher: Arc<Mutex<SyncSender<Message>>>,
@@ -69,24 +68,4 @@ impl AgentCore {
         self.send(py, msg.to_object(py))
     }
 
-    pub fn metric(&mut self, py: Python<'_>, metric: String, value: f64) -> PyObject {
-        self.metrics.get_mut().entry(metric.clone()).or_insert(vec![]).push(value);
-        "ok".to_object(py)
-    }
-
-    pub fn get_metrics(&mut self) -> PyResult<Py<PyAny>> {
-        let metrics_store = self.metrics.get_mut().clone();
-        Python::with_gil(|py| {
-            let metrics = PyDict::new(py);
-            for (key, metric_values) in metrics_store.iter() {
-                println!("{}: {:?}", key, metric_values);
-                let values = PyList::empty(py);
-                for value in metric_values {
-                    values.append(value).unwrap();
-                }
-                metrics.set_item(key, values)?;
-            }
-            Ok(metrics.to_object(py))
-        })
-    }
 }
