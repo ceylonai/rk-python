@@ -5,7 +5,7 @@ import rakun_python
 
 
 @rakun_python.AgentMetric
-@rakun_python.Agent
+@rakun_python.Agent()
 class MyAgent:
     counter = 1
     start_time = time.time_ns()
